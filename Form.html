@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Feedback</title>
+<style>
+	label {	
+		float: left;
+		width: 150px;
+	}
+	#container{
+		width: 700px;
+		margin: auto;
+		background-color: beige;
+	} 
+	main{
+		padding: 50px;
+	}
+	.dataContiner{
+		padding: 50px;
+		display: grid;
+		place-items: center;
+	}
+	table th{
+		background-color: rgb(245, 245, 198);
+	}
+	table td{
+		background-color: rgb(255, 255, 241);
+	}
+	table th,
+	table td{
+		padding: 8px;
+		text-align: center;
+	}
+	small{
+		color: red;
+	}
+</style>
+</head>
+
+<body>
+	<div id="container">
+		<main>
+		<h2>Feeback</h2>
+		<h3>Love something? Hate something? Let us know!</h3>
+			Note : Fields marked with an asterisk(*) are mandatory
+			<br><br>
+			<form id="reg" novalidate>
+				<label>Title*:</label>
+				<input type="radio" name="title" value="mr" required="required"/>Mr.
+				<input type="radio" name="title" value="miss" required="required"/>Miss
+				<input type="radio" name="title" value="mrs" required="required"/>Mrs.
+				<small id="warnTitle"></small>
+				<br><br>
+
+				<label for="firstName">First Name*:</label>
+				<input type="text" name="firstName" id="firstName" placeholder="First Name" />	
+				<small id="warnFirst"></small>
+				<br><br>
+
+				<label for="lastName">Last Name*:</label>
+				<input type="text" name="lastName" id="lastName" placeholder="Last Name" />
+				<small id="warnLast"></small>
+				<br><br>
+				
+				<label for="emailId">Email Id*:</label>
+				<input type="text" name="emailId" id="emailId" placeholder="yourname@domain.com" onkeyup="validEmail(this, warnEmail)"/>
+				<small id="warnEmail"></small>
+				<br><br>
+				
+				<label for="phoneNumber">Phone Number*:</label>
+				<input type="text" name="phoneNumber" id="phoneNumber" placeholder="xxx-xxx-xxxx" onkeyup="validPhone(this, warnPhone)" />
+				<small id="warnPhone"></small>
+				<br><br>
+
+				<label for="streetAddress1">Street Address 1*:</label>
+				<input type="text" name="streetAddress1" id="streetAddress1" placeholder="address" required />
+				<small id="warnStreet1"></small>
+				<br><br>
+
+				<label for="streetAddress2">Street Address 2:</label>
+				<input type="text" name="streetAddress2" id="streetAddress2" placeholder="address" />
+				<br><br>
+
+				<label for="city">City*:</label>
+				<input type="text" name="city" id="city" placeholder="city" />
+				<small id="warnCity"></small>
+				<br><br>
+
+				<label for="state">State*:</label>
+				<input type="text" name="state" id="state" placeholder="state" />
+				<small id="warnState"></small>
+				<br><br>
+				
+				<label for="zipcode">ZipCode*:</label>
+				<input type="text" name="zipcode" id="zipcode" placeholder="xxxxxx" onkeyup="validZipcode(this, warnZip)"/>
+				<small id="warnZip"></small>
+				<br><br>
+				
+				<label for="source">How did you hear*:</label>
+				<input type='checkbox' name="source" id="hearCheck1" value="facebook" /> Facebook
+				<input type='checkbox' name="source" id="hearCheck2" value="google" /> Google
+				<input type='checkbox' name="source" id="hearCheck3" value="yelp" /> Yelp 
+				<small id="warnHear"></small>
+				<br><br> 
+				
+				<label for="comments">Comments*:</label>
+				<textarea name="text" id="comments" placeholder="Your comments" rows="5" cols="25"></textarea>
+				<small id="warnComment"></small>
+				<br><br>
+				
+				
+				<label for="rating">Place*:</label>
+				<select name="rating" id="rating" onchange="displayMoreFeedback(this.value)">
+					<option value="0">Which place do you like</option>
+					<option value="Banglore">Banglore</option>
+					<option value="Delhi">Delhi</option>
+					<option value="Hyderabad">Hyderabad</option>
+					<option value="Pune">Pune</option>
+					<option value="Nashik">Nashik</option>
+				</select>
+				<small id="warnRating"></small>
+				<br><br>
+
+				<!-- show from js -->
+				<div id="dynamicCheckbox" style="display: none;">
+					<p id="cityMsg">
+						<!-- From javascript -->
+					</p>
+					<input id="msgCheck1" type='checkbox' name="characters" value="Food" /> Food <br>
+					<input id="msgCheck2" type='checkbox' name="characters" value="Culture" /> Culture <br>
+					<input id="msgCheck3" type='checkbox' name="characters" value="SocialLife" /> Social Life<br> 
+					<small id="warnChar"></small>
+					<br><br>
+				</div>
+				
+				<div id="txtOpinion" style="display: none;">
+					<br>
+					<label for="opinion">How was your experience*: </label>
+					<textarea name="opinion" id="opinion" cols="30" rows="10"></textarea>
+					<small id="warnExp"></small>
+					<br><br>
+				</div>	
+
+				<input type="Submit">
+				<input type="Reset">
+				<br><br>
+			</form>
+		</main>
+	</div>
+	
+	<div class="dataContiner" id="dataContiner" style="display: none;">
+		<h2>Feedback Data:</h2><br><br>
+		<table id="tableData" border="1" cellspacing="0">
+			<tr>
+				<th>Sr No</th>
+				<th>Name</th>
+				<th>Email ID</th>
+				<th>Phone Number</th>
+				<th>Street Address 1</th>
+				<th>Street Address 2</th>
+				<th>City</th>
+				<th>State</th>
+				<th>Zip Code</th>
+				<th>Source</th>
+				<th>Comments</th>
+				<th>Place</th>
+				<th>Likes</th>
+				<th>Opinion</th>
+			</tr>
+		</table>
+	 </div>
+
+	<script>
+		var validFields = false;
+		var srno = 1;
+
+		document.getElementById("reg").addEventListener('submit', e => {
+  			e.preventDefault()
+			checkValidity()
+		})
+
+		function checkValidity(){
+			// function to check if fields are empty	
+			var titles = document.querySelectorAll('input[name="title"]');
+			var fname = document.getElementById("firstName").value
+			var lname = document.getElementById("lastName").value
+			var email = document.getElementById("emailId").value
+			var phone = document.getElementById("phoneNumber").value
+			var street1 = document.getElementById("streetAddress1").value
+			var city = document.getElementById("city").value
+			var state = document.getElementById("state").value
+			var zipcode = document.getElementById("zipcode").value
+			var hears = document.querySelectorAll('input[name="source"]');
+			var comments = document.getElementById("comments").value
+			var rating = document.getElementById("rating").value
+			var characters = document.querySelectorAll('input[name="characters"]:checked');
+			var opinion = document.getElementById("opinion").value
+
+			var title = '';
+			for (var i=0; i<titles.length; i++) {
+				if (titles[i].checked) {
+					title = titles[i].value;
+				}
+			}
+
+			var hear = Array();
+			for (var i=0; i<hears.length; i++) {
+				if (hears[i].checked) {
+					hear.push(hears[i].value);
+				}
+			}
+
+			if(title == ''){
+				document.getElementById("warnTitle").innerHTML = 'Please select your title'
+				validFields = false
+			}else{
+				document.getElementById("warnTitle").innerHTML = ''
+				validFields = true
+			}
+
+			if(fname == ''){
+				document.getElementById("warnFirst").innerHTML = 'Please enter your first name'
+				validFields = false
+			}else{
+				document.getElementById("warnFirst").innerHTML = ''
+				validFields = true
+			}
+
+			if(lname == ''){
+				document.getElementById("warnLast").innerHTML = 'Please enter your last name'
+				validFields = false
+			}else{
+				document.getElementById("warnLast").innerHTML = ''
+				validFields = true
+			}
+
+			
+			if(email == ''){
+				document.getElementById("warnEmail").innerHTML = 'Please enter your email address'
+				validFields = false
+			}else{
+				document.getElementById("warnEmail").innerHTML = ''
+				validFields = true
+			}
+
+			
+			if(phone == ''){
+				document.getElementById("warnPhone").innerHTML = 'Please enter your phone number'
+				validFields = false
+			}else{
+				document.getElementById("warnPhone").innerHTML = ''
+				validFields = true
+			}
+			
+			if(street1 == ''){
+				document.getElementById("warnStreet1").innerHTML = 'Please enter your street address'
+				validFields = false
+			}else{
+				document.getElementById("warnStreet1").innerHTML = ''	
+				validFields = true
+			}
+
+			if(city == ''){
+				document.getElementById("warnCity").innerHTML = 'Please enter the your city name'
+				validFields = false
+			}else{
+				document.getElementById("warnCity").innerHTML = ''
+				validFields = true
+			}
+			
+			if(state == ''){
+				document.getElementById("warnState").innerHTML = 'Please enter your state'
+				validFields = false
+			}else{
+				document.getElementById("warnState").innerHTML = ''
+				validFields = true
+			}
+
+			if(hears.length == 0){
+				document.getElementById("warnHear").innerHTML = 'Please select where did you hear from us'
+				validFields = false
+			}else{
+				document.getElementById("warnHear").innerHTML = ''
+				hear = hear.join(', ')
+				validFields = true
+			}	
+			
+			if(zipcode == ''){
+				document.getElementById("warnZip").innerHTML = 'Please enter your zipcode'
+				validFields = false
+			}else{
+				document.getElementById("warnZip").innerHTML = ''
+				validFields = true
+			}
+			
+			if(comments == ''){
+				document.getElementById("warnComment").innerHTML = 'Kindly add your valuable comment'
+				validFields = false
+			}else{
+				document.getElementById("warnComment").innerHTML = ''
+				validFields = true
+			}
+
+			if(rating == '0'){
+				document.getElementById("warnRating").innerHTML = 'Please select your favarite place'
+				validFields = false
+			}else{
+				document.getElementById("warnRating").innerHTML = ''
+				validFields = true
+			}
+
+			if(characters.length == 0){
+				document.getElementById("warnChar").innerHTML = 'Select atleast one characters you like'
+				validFields = false
+			}else{
+				document.getElementById("warnChar").innerHTML = ''
+				validFields = true
+			}
+
+			if(opinion == ''){
+				document.getElementById("warnExp").innerHTML = 'Kindly share your experience'
+				validFields = false
+			}else{
+				document.getElementById("warnExp").innerHTML = ''
+				validFields = true
+			}
+
+			if(validFields){
+				saveData()
+			}
+		}
+
+		function saveData(){
+			// store all the values in the variable
+			var title = document.querySelector('input[name="title"]:checked').value
+			var fname = document.getElementById("firstName").value
+			var lname = document.getElementById("lastName").value
+			var email = document.getElementById("emailId").value
+			var phone = document.getElementById("phoneNumber").value
+			var street1 = document.getElementById("streetAddress1").value
+			var street2 = document.getElementById("streetAddress2").value
+			var city = document.getElementById("city").value
+			var state = document.getElementById("state").value
+			var zipcode = document.getElementById("zipcode").value
+
+			// how do you hear
+			var hear1 = document.getElementById("hearCheck1");
+			var hear2 = document.getElementById("hearCheck2");
+			var hear3 = document.getElementById("hearCheck3");
+			var selectedHears = Array()
+			
+			// if checkbox is checked then store value in the array 
+			if(hear1.checked){
+				selectedHears.push(hear1.value)	
+			}
+			if(hear2.checked){
+				selectedHears.push(hear2.value)	
+			}
+			if(hear3.checked){
+				selectedHears.push(hear3.value)	
+			}
+
+			var comments = document.getElementById("comments").value
+			var place = document.getElementById("rating").value
+			var likes = document.getElementById("rating").value
+
+			// get only checked items
+			var msgCheck1 = document.getElementById("msgCheck1");
+			var msgCheck2 = document.getElementById("msgCheck2");
+			var msgCheck3 = document.getElementById("msgCheck3");
+			var selectedLikes = Array()
+			
+			// if checkbox is checked then store value in the array 
+			if(msgCheck1.checked){
+				selectedLikes.push(msgCheck1.value)	
+			}
+			if(msgCheck2.checked){
+				selectedLikes.push(msgCheck2.value)	
+			}
+			if(msgCheck3.checked){
+				selectedLikes.push(msgCheck3.value)	
+			}
+
+			var opinion = document.getElementById("opinion").value
+			
+			// Now store in the table
+			var table = document.getElementById("tableData")
+			table.innerHTML += `
+			<tr>
+				<td>${srno}</td>
+					<td>${title}. ${fname} ${lname}</td>
+					<td>${email}</td>
+					<td>${phone}</td>
+					<td>${street1}</td>
+					<td>${street2}</td>
+					<td>${city}</td>
+					<td>${state}</td>
+					<td>${zipcode}</td>
+					<td>${selectedHears.join(', ')}</td>
+					<td>${comments}</td>
+					<td>${place}</td>
+					<td>${selectedLikes.join(', ')}</td>
+					<td>${opinion}</td>
+				</tr>
+			`;
+			srno++
+			
+			// display table
+			document.getElementById("dataContiner").style.display = 'block'
+
+			// empty the form
+			document.getElementById("reg").reset()
+		}
+
+		function validEmail(ob, warn){
+			var domain = "northeastern.edu";
+			var emailPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+			if(ob.value.match(emailPattern)){
+				warn.innerHTML = "";  
+			}else{
+				warn.innerHTML = "Email address is not Valid";  
+				return false
+			} 
+
+			if(ob.value.indexOf(domain) != -1) {
+				warn.innerHTML = "";  
+			} else if (emailId.value.indexOf(domain) === -1) {
+				warn.innerHTML = "Email address should contain domain 'northeastern.edu'";  
+				return false
+			}
+		}
+
+		function validPhone(ob, warn){
+			var mobPattern = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4}$/im;
+
+			if(ob.value.match(mobPattern)){
+				warn.innerHTML = "";  
+			}else{
+				warn.innerHTML = "Enter phone number in valid format";
+				return false
+			}
+		}
+
+		function validZipcode(ob, warn){
+			var validateZip = /^\d{5}(-\d{4})?$/;
+			if(ob.value.match(validateZip)){
+				warn.innerHTML = "";  
+				return true;
+			} else {
+				warn.innerHTML = "Entered zip code is not in valid format";
+				return false;
+			}
+		}
+
+		function displayMoreFeedback(location){
+			document.getElementById("dynamicCheckbox").style.display = 'block'
+
+			if(location == "0"){
+				document.getElementById("dynamicCheckbox").style.display = 'none'
+			}else{
+				document.getElementById("cityMsg").innerText = "Thankyou, what you like the most about " + location
+			}
+
+			const msgCheck1 = document.getElementById("msgCheck1");
+			const msgCheck2 = document.getElementById("msgCheck2");
+			const msgCheck3 = document.getElementById("msgCheck3");
+
+			var textReason = document.getElementById("txtOpinion")
+			var validatationBool = true
+			
+			msgCheck1.addEventListener("click", () => {
+				if (msgCheck1.checked || msgCheck2.checked || msgCheck3.checked) {
+					textReason.style.display = "block";
+				} else {
+					textReason.style.display = "none";
+				}
+			})
+
+			msgCheck2.addEventListener("click", () => {
+				if (msgCheck1.checked || msgCheck2.checked || msgCheck3.checked) {
+					textReason.style.display = "block";
+				} else {
+					textReason.style.display = "none";
+				}
+			})
+
+			msgCheck3.addEventListener("click", () => {
+				if (msgCheck1.checked || msgCheck2.checked || msgCheck3.checked) {
+					textReason.style.display = "block";
+				} else {
+					textReason.style.display = "none";
+				}
+			})
+		}
+
+	</script>
+
+</body>
+</html>
